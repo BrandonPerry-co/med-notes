@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Notes</title>
+
+</head>
+<body>
+
+<h1>Welcome to Medical Notes</h1>
+<form id="medicalNoteUpdateForm" onsubmit="event.preventDefault(); updatePatient();">
+    <a href="index.html">Click here to add Patient notes</a><br><br>
+    <label for="patId">Patient ID:</label>
+    <input type="number" id="patId" name="patId" required><br><br>
+
+    <label for="note">Note:</label>
+    <input type="text" id="note" name="note" required><br><br>
+
+    <input type="submit" value="Submit" class="submit-button">
+</form>
+
+<h2>Updated Note</h2>
+<div id="updatedPatientInfo"></div>
+
+<script src="/script.js" type="module" defer></script>
+</body>
+</html>
