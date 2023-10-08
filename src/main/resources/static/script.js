@@ -1,4 +1,3 @@
-//
 
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById('medNotesForm');
@@ -6,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function() {
     fetchAndDisplayNotes();
 });
 
+//Add patient notes
 function handleSubmit(event) {
     event.preventDefault();
 
@@ -35,70 +35,54 @@ function handleSubmit(event) {
     });
 }
 
-function fetchAndDisplayNotes() {
-    // Fetch all patient notes and display them in 'patientNoteList' div
-    // This function's implementation depends on the API structure.
+//Fetch all notes from DB
+document.addEventListener('DOMContentLoaded', (event) => {
+    fetchAllPatients();
+});
+
+function fetchAllPatients() {
+    fetch('http://localhost:8082/patHistory/getAll')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed with status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            let patientNoteListDiv = document.getElementById('patientNoteList');
+            let html = '';
+
+            data.forEach(note => {
+                html += `<div><strong>Patient ID:</strong> ${note.patId}<br>`;
+                html += `<strong>ID:</strong> ${note.id}</div><br>`;
+                html += `<strong>Note:</strong> ${note.note}</div><hr>`;
+            });
+
+            patientNoteListDiv.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
 }
-
-
-//// Posting A New Patient this works
-//document.addEventListener("DOMContentLoaded", function() {
-//    const form = document.getElementById('medNotesForm');
-//    form.addEventListener('submit', handleSubmit);
-//});
-//
-//function handleSubmit(event) {
-//    event.preventDefault();
-//
-//    let patId = document.getElementById('patId').value;
-//    let note = document.getElementById('note').value;
-//
-//    let payload = {
-//        patId: patId,
-//        note: note
-//    };
-//
-//    fetch('http://localhost:8082/patHistory/add'{
-//        method: 'POST',
-//        headers: {
-//            'Content-Type': 'application/x-www-form-urlencoded'
-//        },
-//        body: new URLSearchParams(payload)
-//    })
-//    .then(response => response.json())
-//    .then(data => {
-//        alert(`Patient note added successfully!\n\nPatient Id: ${data.patId} \nNote: ${data.note}`);
-//    })
-//    .catch(error => {
-//        console.error('Error:', error);
-//        alert('Failed to add patient notes.');
-//    });
-//}
-
-
 
 document.getElementById('medicalNoteUpdateForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    updatePatientNotes();
+    updatePatient();
 });
 
 // Update patient note
-
 window.updatePatient = updatePatient;
 
 function updatePatient() {
-console.log('updatePatient function called');
-    let patId = document.getElementById('patId').value;
+    console.log('updatePatient function called');
+
+    let patId = document.getElementById('id').value;
     let note = document.getElementById('note').value;
 
     let userDetails = {
-        patId: patId,
+        id: patId,
         note: note
     };
-
-    Object.keys(userDetails).forEach(key => {
-        if (!userDetails[key]) delete userDetails[key];
-    });
 
     fetch(`http://localhost:8082/patHistory/${patId}`, {
         method: 'PUT',
@@ -107,11 +91,16 @@ console.log('updatePatient function called');
         },
         body: JSON.stringify(userDetails)
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Failed with status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         let infoDiv = document.getElementById('updatedPatientInfo');
         infoDiv.innerHTML = `
-            Patient Id: ${data.patId}<br>
+            Patient Id: ${data.id}<br>
             Note: ${data.note}
         `;
     })
@@ -119,45 +108,3 @@ console.log('updatePatient function called');
         console.error('Error:', error);
     });
 }
-
-//document.addEventListener("DOMContentLoaded", function() {
-//    fetchPatients();
-//});
-//
-//
-//
-//function fetchPatients() {
-//    fetch("http://localhost:8081/patient/findAll")
-//    .then(response => {
-//        if (!response.ok) {
-//            throw new Error("Network response was not ok");
-//        }
-//        return response.json();
-//    })
-//    .then(patients => {
-//        const patientsList = document.getElementById("patientsList");
-//
-//        // Check if patientsList exists
-//        if (!patientsList) {
-//            console.warn("Element with ID 'patientsList' not found in the DOM.");
-//            return;
-//        }
-//
-//        patients.forEach(patient => {
-//            const patientInfo = document.createElement("div");
-//            patientInfo.textContent = `
-//                ID: ${patient.id}
-//                Address: ${patient.address},
-//                DOB: ${patient.dob},
-//                Family: ${patient.family},
-//                Given: ${patient.given},
-//                Sex: ${patient.sex},
-//                Phone: ${patient.phone}
-//            `;
-//            patientsList.appendChild(patientInfo);
-//        });
-//    })
-//    .catch(error => {
-//        console.error("There was a problem with the fetch operation:", error.message);
-//    });
-//}

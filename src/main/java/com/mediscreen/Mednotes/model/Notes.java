@@ -30,11 +30,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Notes {
 
     @Id
-    private String id;  // Unique identifier for each note, MongoDB style
+    private String id;
 
-    private int patId;  // Patient's ID
+    private int patId;
 
-    private String note;  // Actual note content
+    private String note;
 
 }
 
